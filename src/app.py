@@ -1,7 +1,8 @@
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Set
 from src.classifier import classify_file
+from src.models import ClassificationError
 
 app = FastAPI(
     title="Heron File Classifier",
@@ -18,34 +19,38 @@ def allowed_file(filename: str) -> bool:
     return ('.' in filename and 
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
 
-@app.post("/classify_file")
-async def classify_file_route(file: UploadFile) -> JSONResponse:
+@app.post("/classify_file", response_model=dict)
+async def classify_file_route(file: UploadFile = File(...)):
     """
-    Classify a file based on its content and metadata.
+    Classify a file into a document type.
     
     Args:
-        file: The uploaded file to classify
+        file: The file to classify
         
     Returns:
-        JSONResponse: Contains the classification result
-        
-    Raises:
-        HTTPException: If file is missing or has invalid extension
+        dict: Classification result with document type and metadata
     """
-    # if not file:
-    #     raise HTTPException(status_code=400, detail="No file provided")
-    
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="No filename provided")
-    
-    if not allowed_file(file.filename):
-        raise HTTPException(
-            status_code=400,
-            detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+    try:
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No filename provided")
+        
+        if not allowed_file(file.filename):
+            raise HTTPException(
+                status_code=400,
+                detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
+        
+        result = await classify_file(file)
+        return result
+    except Exception as e:
+        error = ClassificationError(
+            error="Classification failed",
+            details=str(e)
         )
-    
-    file_class = await classify_file(file)
-    return JSONResponse(content={"file_class": file_class})
+        raise HTTPException(
+            status_code=500,
+            detail=error.dict()
+        )
 
 if __name__ == '__main__':
     import uvicorn
