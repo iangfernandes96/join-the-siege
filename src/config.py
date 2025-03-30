@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Set
 
 
 class ClassifierConfig(BaseModel):
@@ -92,5 +92,8 @@ class AppConfig(BaseModel):
     )
 
 
-# Create a global config instance
-config = AppConfig() 
+ALLOWED_EXTENSIONS: Set[str] = {'pdf', 'png', 'jpg', 'jpeg', 'xls',
+                                'xlsx', 'doc', 'docx', 'csv', 'txt'}
+
+
+config = AppConfig()

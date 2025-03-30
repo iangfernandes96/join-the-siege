@@ -30,4 +30,4 @@ class ImageExtractor(BaseTextExtractor):
         except Exception as e:
             raise ValueError(f"Failed to extract text from image: {str(e)}")
         finally:
-            await file.seek(0)  # Reset file pointer for potential reuse 
+            await file.seek(0)

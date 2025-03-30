@@ -1,4 +1,3 @@
-from typing import Dict, List
 import logging
 from fastapi import UploadFile
 import numpy as np

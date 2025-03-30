@@ -48,4 +48,4 @@ class PDFExtractor(BaseTextExtractor):
             logger.error(f"Failed to process PDF: {str(e)}")
             raise ValueError(f"Failed to extract text from PDF: {str(e)}")
         finally:
-            await file.seek(0)  # Reset file pointer for potential reuse 
+            await file.seek(0)

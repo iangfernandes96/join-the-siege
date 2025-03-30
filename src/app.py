@@ -1,16 +1,14 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from typing import Set
 from src.classifier import classify_file
 from src.models import ClassificationError, ClassificationResponse
+from src.config import ALLOWED_EXTENSIONS
+
 
 app = FastAPI(
     title="Heron File Classifier",
     description="API for classifying files based on content and metadata",
     version="1.0.0"
 )
-
-ALLOWED_EXTENSIONS: Set[str] = {'pdf', 'png', 'jpg', 'jpeg', 'xls',
-                                'xlsx', 'doc', 'docx', 'csv', 'txt'}
 
 
 def allowed_file(filename: str) -> bool:

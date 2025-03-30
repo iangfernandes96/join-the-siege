@@ -19,4 +19,4 @@ class BaseTextExtractor(ABC):
         Raises:
             ValueError: If the file cannot be processed
         """
-        pass 
+        pass
