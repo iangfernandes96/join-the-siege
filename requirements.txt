@@ -12,3 +12,8 @@ pandas==2.2.1
 openpyxl==3.1.2
 pytesseract==0.3.10
 Pillow==10.2.0
+scikit-learn==1.6.1
+numpy==1.26.4
+transformers==4.38.2
+torch==2.2.1
+rapidfuzz==3.9.0
