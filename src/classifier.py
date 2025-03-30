@@ -12,9 +12,9 @@ from .config import config
 classifier = CompositeClassifier([
     RegexClassifier(),
     # BERTClassifier(),
-    TFIDFClassifier(),
-    FuzzyClassifier(),
-    FilenameClassifier()
+    # TFIDFClassifier(),
+    # FuzzyClassifier(),
+    # FilenameClassifier()
 ])
 
 
@@ -29,4 +29,7 @@ async def classify_file(file: UploadFile) -> ClassificationResponse:
         ClassificationResponse: The classification result with metadata
     """
     result = await classifier.classify(file)
-    return ClassificationResponse(document_type=result)
+    return ClassificationResponse(
+        document_type=result.document_type,
+        classifier_used=result.classifier_name
+    )

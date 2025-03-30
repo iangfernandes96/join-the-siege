@@ -3,6 +3,7 @@ from fastapi import UploadFile
 from rapidfuzz import process
 from .base import BaseClassifier
 from ..config import config
+from ..models import ClassifierResult
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ class FuzzyClassifier(BaseClassifier):
         self.patterns = config.patterns.dict()
         self.similarity_threshold = config.classifier.similarity_threshold
     
-    async def classify(self, file: UploadFile) -> str:
+    async def classify(self, file: UploadFile) -> ClassifierResult:
         """
         Classify a file using fuzzy string matching on the filename.
         
@@ -23,12 +24,14 @@ class FuzzyClassifier(BaseClassifier):
             file: The uploaded file to classify
             
         Returns:
-            str: The classification result
+            ClassifierResult: The classification result
         """
         try:
             if not file or not file.filename:
                 logger.error("No file or filename provided")
-                return "unknown file"
+                return ClassifierResult(
+                    classifier_name=self.__class__.__name__
+                )
                 
             filename = file.filename.lower()
             logger.info(f"Classifying file: {filename}")
@@ -50,7 +53,10 @@ class FuzzyClassifier(BaseClassifier):
                     f"Classified as '{best_match}' with similarity "
                     f"score {best_score:.1f}"
                 )
-                return best_match
+                return ClassifierResult(
+                    document_type=best_match,
+                    classifier_name=self.__class__.__name__
+                )
             
             # If no good match found, try partial matching
             for doc_type, patterns in self.patterns.items():
@@ -61,14 +67,21 @@ class FuzzyClassifier(BaseClassifier):
                             f"Classified as '{doc_type}' using partial "
                             f"match with '{pattern}'"
                         )
-                        return doc_type
+                        return ClassifierResult(
+                            document_type=doc_type,
+                            classifier_name=self.__class__.__name__
+                        )
             
             logger.info(
                 f"No good match found (best score: {best_score:.1f}), "
                 "returning unknown"
             )
-            return "unknown file"
+            return ClassifierResult(
+                classifier_name=self.__class__.__name__
+            )
             
         except Exception as e:
             logger.error(f"Error during fuzzy classification: {str(e)}")
-            return "unknown file" 
+            return ClassifierResult(
+                classifier_name=self.__class__.__name__
+            ) 

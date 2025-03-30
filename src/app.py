@@ -34,7 +34,8 @@ async def classify_file_route(file: UploadFile = File(...)):
         if not allowed_file(file.filename):
             raise HTTPException(
                 status_code=400,
-                detail=f"File type not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
+                detail=f"""File type not allowed.
+                Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"""
             )
         
         result = await classify_file(file)
@@ -46,7 +47,7 @@ async def classify_file_route(file: UploadFile = File(...)):
         )
         raise HTTPException(
             status_code=500,
-            detail=error.dict()
+            detail=error.model_dump()
         )
 
 if __name__ == '__main__':

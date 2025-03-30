@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from fastapi import UploadFile
+from ..models import ClassifierResult
 import logging
 
 # Set up logging
@@ -11,15 +12,15 @@ class BaseClassifier(ABC):
     """Base class for all document classifiers."""
     
     @abstractmethod
-    async def classify(self, file: UploadFile) -> str:
+    async def classify(self, file: UploadFile) -> ClassifierResult:
         """
-        Classify a file based on its content and metadata.
+        Classify a file.
         
         Args:
-            file: The uploaded file to classify
+            file: The file to classify
             
         Returns:
-            str: The classification result
+            ClassifierResult: The classification result
         """
         pass
     
@@ -35,4 +36,4 @@ class BaseClassifier(ABC):
         """
         if not file or not file.filename:
             raise ValueError("File must have a filename")
-        return file.filename.lower() 
+        return file.filename.lower()

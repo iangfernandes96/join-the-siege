@@ -3,6 +3,12 @@ from typing import Optional, List
 from fastapi import UploadFile
 
 
+class ClassifierResult(BaseModel):
+    """Result from a single classifier."""
+    document_type: str = Field(default="unknown file", description="The classified document type")
+    classifier_name: str = Field(..., description="Name of the classifier that made the decision")
+
+
 class ClassificationRequest(BaseModel):
     """Request model for file classification."""
     file: UploadFile = Field(..., description="The file to classify")
@@ -11,6 +17,8 @@ class ClassificationRequest(BaseModel):
 class ClassificationResponse(BaseModel):
     """Response model for file classification."""
     document_type: str = Field(..., description="The classified document type")
+    classifier_used: Optional[str] = Field(None,
+                                           description="Name of the classifier that made the decision")
 
 
 class ClassificationError(BaseModel):

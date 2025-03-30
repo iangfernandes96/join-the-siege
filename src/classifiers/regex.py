@@ -3,6 +3,7 @@ import re
 import logging
 from fastapi import UploadFile
 from .base import BaseClassifier
+from ..models import ClassifierResult
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class RegexClassifier(BaseClassifier):
             ]
         }
     
-    async def classify(self, file: UploadFile) -> str:
+    async def classify(self, file: UploadFile) -> ClassifierResult:
         """
         Classify a file based on regex patterns in its content.
         
@@ -68,10 +69,17 @@ class RegexClassifier(BaseClassifier):
                             f"Found pattern '{pattern}' for document type "
                             f"'{doc_type}'"
                         )
-                        return doc_type
+                        return ClassifierResult(
+                            document_type=doc_type,
+                            classifier_name=self.__class__.__name__
+                        )
             
-            return "unknown file"
+            return ClassifierResult(
+                classifier_name=self.__class__.__name__
+            ) 
             
         except Exception as e:
             logger.error(f"Error during regex classification: {str(e)}")
-            return "unknown file" 
+            return ClassifierResult(
+                classifier_name=self.__class__.__name__
+            ) 

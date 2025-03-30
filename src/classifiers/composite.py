@@ -2,6 +2,7 @@ from typing import List
 import logging
 from fastapi import UploadFile
 from .base import BaseClassifier
+from ..models import ClassifierResult
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -19,20 +20,20 @@ class CompositeClassifier(BaseClassifier):
         """
         self.classifiers = classifiers
     
-    async def classify(self, file: UploadFile) -> str:
+    async def classify(self, file: UploadFile) -> ClassifierResult:
         """
         Classify a file using multiple classifiers in sequence.
         
         Args:
-            file: The uploaded file to classify
+            file: The file to classify
             
         Returns:
-            str: The classification result
+            ClassifierResult: The first valid classification result
         """
         for classifier in self.classifiers:
             try:
                 result = await classifier.classify(file)
-                if result != "unknown file":
+                if result.document_type != "unknown file":
                     return result
             except Exception as e:
                 logger.error(
@@ -41,4 +42,7 @@ class CompositeClassifier(BaseClassifier):
                 )
                 continue
         
-        return "unknown file" 
+        # If no classifier succeeded, return unknown
+        return ClassifierResult(
+            classifier_name=self.__class__.__name__
+        ) 
