@@ -12,9 +12,9 @@ from .config import config
 classifier = CompositeClassifier([
     RegexClassifier(),
     # BERTClassifier(),
-    # TFIDFClassifier(),
-    # FuzzyClassifier(),
-    # FilenameClassifier()
+    TFIDFClassifier(),
+    FuzzyClassifier(),
+    FilenameClassifier()
 ])
 
 

@@ -6,6 +6,7 @@ from .docx import DocxExtractor
 from .excel import ExcelExtractor
 from .image import ImageExtractor
 from .text import TextExtractor
+from ..config import config
 
 
 class TextExtractorFactory:
@@ -15,14 +16,14 @@ class TextExtractorFactory:
     _extractors: Dict[str, Type[BaseTextExtractor]] = {
         'pdf': PDFExtractor,
         'docx': DocxExtractor,
-        'doc': DocxExtractor,  # Handle both .doc and .docx
+        'doc': DocxExtractor,
         'xlsx': ExcelExtractor,
-        'xls': ExcelExtractor,  # Handle both .xls and .xlsx
+        'xls': ExcelExtractor,
         'png': ImageExtractor,
         'jpg': ImageExtractor,
         'jpeg': ImageExtractor,
         'txt': TextExtractor,
-        'csv': TextExtractor,  # Treat CSV as text
+        'csv': ExcelExtractor,
     }
     
     @classmethod
@@ -56,16 +57,7 @@ class TextExtractorFactory:
             mime = magic.Magic(mime=True)
             mime_type = mime.from_buffer(content)
             
-            # Map MIME types to extensions
-            mime_to_extension = {
-                'application/pdf': 'pdf',
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
-                'application/msword': 'doc',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
-                'application/vnd.ms-excel': 'xls',
-                'text/plain': 'txt',
-                'text/csv': 'csv'
-            }
+            mime_to_extension = config.mime_to_extension
             
             # If we have a valid MIME type, use it
             if mime_type in mime_to_extension:

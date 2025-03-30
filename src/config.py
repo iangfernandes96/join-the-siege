@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Set
+from typing import List, Set, Dict
 
 
 class ClassifierConfig(BaseModel):
@@ -74,10 +74,46 @@ class DocumentPatterns(BaseModel):
     )
 
 
+class RegexPatterns(BaseModel):
+    """Regex patterns for document classification."""
+    drivers_licence: List[str] = Field(
+        default=[
+                r"drivers?\s*licen[sc]e",
+                r"dl\s*number",
+                r"driver\s*id",
+                r"drivers?\s*permit"
+            ]
+        )
+    
+    bank_statement: List[str] = Field(
+        default=[
+                r"bank\s*statement",
+                r"account\s*statement",
+                r"transaction\s*history",
+                r"account\s*summary",
+                r"balance\s*sheet",
+                r"account\s*balance",
+                r"statement\s*period"
+            ]
+    )
+
+    invoice: List[str] = Field(
+        default=[
+                r"invoice",
+                r"bill\s*to",
+                r"amount\s*due",
+                r"payment\s*terms",
+                r"invoice\s*number",
+                r"invoice\s*date"
+            ]
+    )
+
+
 class AppConfig(BaseModel):
     """Main application configuration."""
     classifier: ClassifierConfig = Field(default_factory=ClassifierConfig)
     patterns: DocumentPatterns = Field(default_factory=DocumentPatterns)
+    regex_patterns: RegexPatterns = Field(default_factory=RegexPatterns)
     model_name: str = Field(default="distilbert-base-uncased")
     supported_file_types: List[str] = Field(
         default=[
@@ -89,6 +125,17 @@ class AppConfig(BaseModel):
             "image/jpeg",
             "image/png"
         ]
+    )
+    mime_to_extension: Dict[str, str] = Field(
+        default={
+                'application/pdf': 'pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+                'application/msword': 'doc',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+                'application/vnd.ms-excel': 'xls',
+                'text/plain': 'txt',
+                'text/csv': 'csv'
+            }
     )
 
 

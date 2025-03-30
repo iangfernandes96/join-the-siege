@@ -5,7 +5,6 @@ from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
 
-# Set up logging
 logger = logging.getLogger(__name__)
 
 
@@ -13,7 +12,7 @@ class FuzzyClassifier(BaseClassifier):
     """Classifier that uses fuzzy string matching to classify files."""
     
     def __init__(self):
-        self.patterns = config.patterns.dict()
+        self.patterns = config.patterns.model_dump()
         self.similarity_threshold = config.classifier.similarity_threshold
     
     async def classify(self, file: UploadFile) -> ClassifierResult:

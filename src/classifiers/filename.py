@@ -2,8 +2,8 @@ import logging
 from fastapi import UploadFile
 from .base import BaseClassifier
 from ..models import ClassifierResult
+from ..config import config
 
-# Set up logging
 logger = logging.getLogger(__name__)
 
 
@@ -12,60 +12,7 @@ class FilenameClassifier(BaseClassifier):
     
     def __init__(self):
         # Keywords and patterns for each document type
-        self.patterns = {
-            "drivers_licence": [
-                "drivers license",
-                "driver's license",
-                "drivers licence",
-                "driver's licence",
-                "driving license",
-                "driving licence",
-                "dl",
-                "license",
-                "licence",
-                "permit",
-                "id card",
-                "identification",
-                "driver id",
-                "driver identification"
-            ],
-            "bank_statement": [
-                "bank statement",
-                "account statement",
-                "banking statement",
-                "statement of account",
-                "account summary",
-                "bank summary",
-                "transaction history",
-                "account history",
-                "banking summary",
-                "statement",
-                "bank account",
-                "account details",
-                "banking details",
-                "transaction summary"
-            ],
-            "invoice": [
-                "invoice",
-                "bill",
-                "receipt",
-                "payment",
-                "charge",
-                "fee",
-                "cost",
-                "amount due",
-                "total amount",
-                "price",
-                "quote",
-                "estimate",
-                "statement",
-                "debit note",
-                "credit note",
-                "order",
-                "purchase order",
-                "sales order"
-            ]
-        }
+        self.patterns = config.patterns.model_dump()
     
     async def classify(self, file: UploadFile) -> ClassifierResult:
         """

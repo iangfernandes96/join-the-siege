@@ -6,6 +6,7 @@ from sklearn.naive_bayes import MultinomialNB
 from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
+from ..extractors.factory import TextExtractorFactory
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -125,8 +126,6 @@ class TFIDFClassifier(BaseClassifier):
             if not self.is_trained:
                 self.train()
             
-            # Get the appropriate extractor for the file type
-            from ..extractors.factory import TextExtractorFactory
             extractor = TextExtractorFactory.get_extractor(file)
             
             # Extract text from the file
