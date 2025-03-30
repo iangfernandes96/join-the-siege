@@ -75,16 +75,11 @@ class TextExtractorFactory:
                 pass
             else:
                 raise ValueError(f"Unsupported MIME type: {mime_type}")
-                
-        except ImportError:
-            # If python-magic is not available, just use the file extension
-            pass
         except Exception as e:
-            # If there's any other error with python-magic, fall back to extension
-            print(f"Warning: Failed to use python-magic: {str(e)}")
+            print(f"Error occurred with mime type checking: {str(e)}")
         
         # Get the appropriate extractor based on extension
         if extension in cls._extractors:
             return cls._extractors[extension]()
             
-        raise ValueError(f"Unsupported file extension: {extension}") 
+        raise ValueError(f"Unsupported file extension: {extension}")

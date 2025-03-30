@@ -24,7 +24,7 @@ async def classify_file(file: UploadFile) -> str:
         
         # Extract text from the file
         text = await extractor.extract_text(file)
-        logger.info(f"Extracted text from file: {file.filename}")
+        logger.info(f"Extracted text from file: {file.filename} {text[:100]}")
         
         # Convert text to lowercase for case-insensitive matching
         text = text.lower()
