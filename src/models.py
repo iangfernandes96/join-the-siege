@@ -11,8 +11,6 @@ class ClassificationRequest(BaseModel):
 class ClassificationResponse(BaseModel):
     """Response model for file classification."""
     document_type: str = Field(..., description="The classified document type")
-    confidence: Optional[float] = Field(None, description="Confidence score if available")
-    classifier_used: str = Field(..., description="Name of the classifier that made the decision")
 
 
 class ClassificationError(BaseModel):

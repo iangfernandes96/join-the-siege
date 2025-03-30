@@ -1,12 +1,11 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
 from typing import Set
 from src.classifier import classify_file
-from src.models import ClassificationError
+from src.models import ClassificationError, ClassificationResponse
 
 app = FastAPI(
     title="Heron File Classifier",
-    description="API for classifying files based on their content and metadata",
+    description="API for classifying files based on content and metadata",
     version="1.0.0"
 )
 
@@ -19,7 +18,7 @@ def allowed_file(filename: str) -> bool:
     return ('.' in filename and 
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
 
-@app.post("/classify_file", response_model=dict)
+@app.post("/classify_file", response_model=ClassificationResponse)
 async def classify_file_route(file: UploadFile = File(...)):
     """
     Classify a file into a document type.
@@ -28,7 +27,7 @@ async def classify_file_route(file: UploadFile = File(...)):
         file: The file to classify
         
     Returns:
-        dict: Classification result with document type and metadata
+        ClassificationResponse: Classification result with document type and metadata
     """
     try:
         if not file.filename:
