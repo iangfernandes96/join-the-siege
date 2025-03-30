@@ -16,8 +16,9 @@ def allowed_file(filename: str) -> bool:
     return ('.' in filename and 
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS)
 
+
 @app.post("/classify_file", response_model=ClassificationResponse)
-async def classify_file_route(file: UploadFile = File(...)):
+async def classify_file_route(file: UploadFile = File(default=None)):
     """
     Classify a file into a document type.
     
@@ -27,19 +28,22 @@ async def classify_file_route(file: UploadFile = File(...)):
     Returns:
         ClassificationResponse: Classification result with document type and metadata
     """
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file or filename provided")
+    
+    if not allowed_file(file.filename):
+        allowed = ', '.join(ALLOWED_EXTENSIONS)
+        raise HTTPException(
+            status_code=400,
+            detail=f"File type not allowed. Allowed types: {allowed}"
+        )
+    
     try:
-        if not file.filename:
-            raise HTTPException(status_code=400, detail="No filename provided")
-        
-        if not allowed_file(file.filename):
-            raise HTTPException(
-                status_code=400,
-                detail=f"""File type not allowed.
-                Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"""
-            )
-        
         result = await classify_file(file)
-        return result
+        return ClassificationResponse(
+            document_type=result.document_type,
+            classifier_name=result.classifier_name
+        )
     except Exception as e:
         error = ClassificationError(
             error="Classification failed",

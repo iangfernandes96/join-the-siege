@@ -33,8 +33,11 @@ class CompositeClassifier(BaseClassifier):
         for classifier in self.classifiers:
             try:
                 result = await classifier.classify(file)
-                if result.document_type != "unknown file":
-                    return result
+                if result.document_type != "unknown":
+                    return ClassifierResult(
+                        document_type=result.document_type,
+                        classifier_name=result.classifier_name
+                    )
             except Exception as e:
                 logger.error(
                     f"Error in classifier {classifier.__class__.__name__}: "
@@ -44,5 +47,6 @@ class CompositeClassifier(BaseClassifier):
         
         # If no classifier succeeded, return unknown
         return ClassifierResult(
+            document_type="unknown",
             classifier_name=self.__class__.__name__
         ) 

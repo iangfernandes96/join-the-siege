@@ -10,10 +10,10 @@ from .config import config
 
 
 classifier = CompositeClassifier([
-    RegexClassifier(),
+    # RegexClassifier(),
     # BERTClassifier(),
-    TFIDFClassifier(),
-    FuzzyClassifier(),
+    # TFIDFClassifier(),
+    # FuzzyClassifier(),
     FilenameClassifier()
 ])
 
@@ -31,5 +31,5 @@ async def classify_file(file: UploadFile) -> ClassificationResponse:
     result = await classifier.classify(file)
     return ClassificationResponse(
         document_type=result.document_type,
-        classifier_used=result.classifier_name
+        classifier_name=result.classifier_name
     )

@@ -17,7 +17,7 @@ class ClassificationRequest(BaseModel):
 class ClassificationResponse(BaseModel):
     """Response model for file classification."""
     document_type: str = Field(..., description="The classified document type")
-    classifier_used: Optional[str] = Field(None,
+    classifier_name: Optional[str] = Field(None,
                                            description="Name of the classifier that made the decision")
 
 
