@@ -1,76 +1,117 @@
-# Heron Coding Challenge - File Classifier
+# Heron File Classifier
 
-## Overview
+A robust document classification system that uses multiple classification strategies to identify document types.
 
-At Heron, we’re using AI to automate document processing workflows in financial services and beyond. Each day, we handle over 100,000 documents that need to be quickly identified and categorised before we can kick off the automations.
+## Features
 
-This repository provides a basic endpoint for classifying files by their filenames. However, the current classifier has limitations when it comes to handling poorly named files, processing larger volumes, and adapting to new industries effectively.
+- Multiple classification strategies:
+  - Fuzzy string matching
+  - Regular expression patterns
+  - TF-IDF based classification
+  - Filename-based classification
+  - Composite classification (weighted voting)
+- Support for various file types:
+  - PDFs
+  - Word documents
+  - Excel files
+  - Images (with OCR)
+  - Text files
+- RESTful API with FastAPI
+- Docker support for easy deployment
 
-**Your task**: improve this classifier by adding features and optimisations to handle (1) poorly named files, (2) scaling to new industries, and (3) processing larger volumes of documents.
+## Prerequisites
 
-This is a real-world challenge that allows you to demonstrate your approach to building innovative and scalable AI solutions. We’re excited to see what you come up with! Feel free to take it in any direction you like, but we suggest:
+- Python 3.12+
+- Docker and Docker Compose
+- Make
 
+## Installation
 
-### Part 1: Enhancing the Classifier
+### Local Development Setup
 
-- What are the limitations in the current classifier that's stopping it from scaling?
-- How might you extend the classifier with additional technologies, capabilities, or features?
-
-
-### Part 2: Productionising the Classifier 
-
-- How can you ensure the classifier is robust and reliable in a production environment?
-- How can you deploy the classifier to make it accessible to other services and users?
-
-We encourage you to be creative! Feel free to use any libraries, tools, services, models or frameworks of your choice
-
-### Possible Ideas / Suggestions
-- Train a classifier to categorize files based on the text content of a file
-- Generate synthetic data to train the classifier on documents from different industries
-- Detect file type and handle other file formats (e.g., Word, Excel)
-- Set up a CI/CD pipeline for automatic testing and deployment
-- Refactor the codebase to make it more maintainable and scalable
-
-## Marking Criteria
-- **Functionality**: Does the classifier work as expected?
-- **Scalability**: Can the classifier scale to new industries and higher volumes?
-- **Maintainability**: Is the codebase well-structured and easy to maintain?
-- **Creativity**: Are there any innovative or creative solutions to the problem?
-- **Testing**: Are there tests to validate the service's functionality?
-- **Deployment**: Is the classifier ready for deployment in a production environment?
-
-
-## Getting Started
 1. Clone the repository:
-    ```shell
-    git clone <repository_url>
-    cd heron_classifier
-    ```
+```bash
+git clone https://github.com/yourusername/heron-file-classifier.git
+cd heron-file-classifier
+```
 
-2. Install dependencies:
-    ```shell
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ```
+2. Create virtual environment and install dependencies:
+```bash
+make dev
+source venv/bin/activate
+```
 
-3. Run the Flask app:
-    ```shell
-    python -m src.app
-    ```
+### Docker Setup
 
-4. Test the classifier using a tool like curl:
-    ```shell
-    curl -X POST -F 'file=@path_to_pdf.pdf' http://127.0.0.1:5000/classify_file
-    ```
+1. Build the Docker image:
+```bash
+make build
+```
 
-5. Run tests:
-   ```shell
-    pytest
-    ```
+2. Run the application:
+```bash
+make run
+```
 
-## Submission
+The application will be available at http://localhost:8000
 
-Please aim to spend 3 hours on this challenge.
+## Usage
 
-Once completed, submit your solution by sharing a link to your forked repository. Please also provide a brief write-up of your ideas, approach, and any instructions needed to run your solution. 
+### API Endpoints
+
+- `POST /classify_file`: Upload and classify a file
+  - Accepts multipart/form-data with a file field
+  - Returns classification result with document type and confidence
+
+### Example Request
+
+```bash
+curl -X POST "http://localhost:8000/classify_file" \
+     -H "accept: application/json" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@/path/to/your/document.pdf"
+```
+
+### Example Response
+
+```json
+{
+    "document_type": "bank_statement",
+    "classifier_used": "FuzzyClassifier"
+}
+```
+
+## Testing
+
+Run the test suite:
+```bash
+make test
+```
+
+## Development
+
+### Available Make Commands
+
+- `make dev`: Create virtual environment and install requirements
+- `make build`: Build Docker image
+- `make run`: Run the application in Docker
+- `make test`: Run the test suite
+- `make stop`: Stop the Docker containers
+
+### Project Structure
+
+```
+heron-file-classifier/
+├── src/
+│   ├── app.py              # FastAPI application
+│   ├── classifiers/        # Classification strategies
+│   ├── extractors/         # Text extraction modules
+│   ├── models.py           # Data models
+│   └── config.py           # Configuration
+├── tests/                  # Test suite
+├── files/                  # Upload directory
+├── Dockerfile             # Docker configuration
+├── docker-compose.yml     # Docker Compose configuration
+├── Makefile              # Make commands
+└── requirements.txt      # Python dependencies
+```
