@@ -11,3 +11,4 @@ htmlcov/
 *.log
 .idea
 .vscode
+*.txt

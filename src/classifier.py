@@ -8,6 +8,8 @@ from .classifiers.composite import CompositeClassifier
 from .models import ClassificationResponse
 from .config import config
 
+import logging
+logger = logging.getLogger(__name__)
 
 classifier = CompositeClassifier([
     # RegexClassifier(),
