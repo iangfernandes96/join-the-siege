@@ -5,7 +5,7 @@ from fastapi import UploadFile
 
 class ClassifierResult(BaseModel):
     """Result from a single classifier."""
-    document_type: str = Field(default="unknown file", description="The classified document type")
+    document_type: str = Field(default="unknown", description="The classified document type")
     classifier_name: str = Field(..., description="Name of the classifier that made the decision")
 
 

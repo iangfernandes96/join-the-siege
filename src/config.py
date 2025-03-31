@@ -1,11 +1,18 @@
 from pydantic import BaseModel, Field
 from typing import List, Set, Dict
 
+# Maximum file size in MB
+MAX_FILE_SIZE_MB = 10
+
+# Allowed file extensions
+ALLOWED_EXTENSIONS = {
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'csv', 'txt'
+}
 
 class ClassifierConfig(BaseModel):
     """Configuration for classifiers."""
     similarity_threshold: float = Field(default=80.0, description="Minimum similarity threshold for fuzzy matching")
-    confidence_threshold: float = Field(default=0.60, description="Minimum confidence threshold for ML classifiers")
+    confidence_threshold: float = Field(default=0.65, description="Minimum confidence threshold for ML classifiers")
     max_features: int = Field(default=5000, description="Maximum number of features for TF-IDF")
     # max_length: int = Field(default=512, description="Maximum sequence length for BERT")
     # num_epochs: int = Field(default=5, description="Number of training epochs for BERT")
@@ -137,10 +144,6 @@ class AppConfig(BaseModel):
                 'text/csv': 'csv'
             }
     )
-
-
-ALLOWED_EXTENSIONS: Set[str] = {'pdf', 'png', 'jpg', 'jpeg', 'xls',
-                                'xlsx', 'doc', 'docx', 'csv', 'txt'}
 
 
 config = AppConfig()

@@ -1,7 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from src.classifier import classify_file
 from src.models import ClassificationError, ClassificationResponse
-from src.config import ALLOWED_EXTENSIONS
+from src.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
 
 
 app = FastAPI(
@@ -9,6 +11,18 @@ app = FastAPI(
     description="API for classifying files based on content and metadata",
     version="1.0.0"
 )
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Add compression middleware
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 def allowed_file(filename: str) -> bool:
@@ -38,6 +52,20 @@ async def classify_file_route(file: UploadFile = File(default=None)):
             detail=f"File type not allowed. Allowed types: {allowed}"
         )
     
+    # Check file size with chunked reading
+    file_size = 0
+    chunk_size = 1024 * 1024  # 1MB chunks
+    while chunk := await file.read(chunk_size):
+        file_size += len(chunk)
+        if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
+            raise HTTPException(
+                status_code=400,
+                detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB"
+            )
+    
+    # Reset file position for classification
+    await file.seek(0)
+    
     try:
         result = await classify_file(file)
         return ClassificationResponse(
@@ -54,6 +82,16 @@ async def classify_file_route(file: UploadFile = File(default=None)):
             detail=error.model_dump()
         )
 
+# Entry point for Uvicorn
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        workers=4,
+        loop="uvloop",
+        limit_concurrency=1000,
+        timeout_keep_alive=30,
+        access_log=True
+    )

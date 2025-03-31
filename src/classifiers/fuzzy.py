@@ -77,13 +77,11 @@ class FuzzyClassifier(BaseClassifier):
                 "returning unknown"
             )
             return ClassifierResult(
-                document_type="unknown",
                 classifier_name=self.__class__.__name__
             )
             
         except Exception as e:
             logger.error(f"Error during fuzzy classification: {str(e)}")
             return ClassifierResult(
-                document_type="unknown",
                 classifier_name=self.__class__.__name__
             ) 

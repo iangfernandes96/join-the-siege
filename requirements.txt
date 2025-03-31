@@ -17,3 +17,4 @@ rapidfuzz==3.12.2
 pytest-asyncio==0.26.0
 starlette==0.46.1
 httpx==0.28.1
+uvloop==0.21.0
