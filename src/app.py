@@ -79,7 +79,7 @@ async def classify_file_route(file: UploadFile = File(default=None)):
             detail=error.model_dump()
         )
 
-# Entry point for Uvicorn
+
 if __name__ == '__main__':
     import uvicorn
     uvicorn.run(
