@@ -47,6 +47,7 @@ source venv/bin/activate
 ```bash
 make run-uvicorn
 ```
+The first time you run this app, it may take a few seconds longer to start due to the training for the TF-IDF model. Subsequent startups will be much faster.
 
 ### Docker Setup
 
