@@ -27,27 +27,8 @@ Please refer to SUBMISSION.md, for a detailed explanation on the submission.
 - Docker and Docker Compose
 - Make
 
-## Installation
-
-### Local Development Setup
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/heron-file-classifier.git
-cd heron-file-classifier
-```
-
-2. Create virtual environment and install dependencies:
-```bash
-make dev
-source venv/bin/activate
-```
-
-3. Run app locally
-```bash
-make run-uvicorn
-```
-The first time you run this app, it may take a few seconds longer to start due to the training for the TF-IDF model. Subsequent startups will be much faster.
+## Running the Application
+You can run the application either via Docker (recommended) or locally. Follow the instructions below depending on your preferred setup.
 
 ### Docker Setup
 
@@ -60,6 +41,25 @@ make build
 ```bash
 make run
 ```
+
+### Local Development Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/iangfernandes96/join-the-siege.git
+cd heron-file-classifier
+```
+
+2. Create virtual environment and install dependencies:
+```bash
+make dev
+```
+
+3. Run app locally
+```bash
+make run-uvicorn
+```
+The first time you run the app via `make run-uvicorn`, it may take a few seconds longer to start due to the training for the TF-IDF model. Subsequent startups will be much faster.
 
 The application will be available at http://localhost:8000. API Documentation will be available at http://localhost:8000/docs
 
