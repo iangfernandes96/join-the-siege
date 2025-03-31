@@ -1,6 +1,4 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
 from src.classifier import classify_file
 from src.models import ClassificationError, ClassificationResponse
 from src.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
@@ -11,18 +9,6 @@ app = FastAPI(
     description="API for classifying files based on content and metadata",
     version="1.0.0",
 )
-
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Add compression middleware
-app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 def allowed_file(filename: str) -> bool:
