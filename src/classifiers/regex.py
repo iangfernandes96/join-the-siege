@@ -13,7 +13,10 @@ class RegexClassifier(BaseClassifier):
     """Classifier that uses regex patterns to identify document types."""
 
     def __init__(self):
-        self.patterns = config.regex_patterns.model_dump()
+        self.patterns = {
+            doc_type: [re.compile(pattern, re.IGNORECASE) for pattern in doc_patterns]
+            for doc_type, doc_patterns in config.regex_patterns.model_dump().items()
+        }
 
     async def classify(self, file: UploadFile) -> ClassifierResult:
         """
@@ -32,18 +35,13 @@ class RegexClassifier(BaseClassifier):
             # Convert text to lowercase for case-insensitive matching
             text = text.lower()
 
-            # Check for patterns in the text
-            for doc_type, doc_patterns in self.patterns.items():
-                for pattern in doc_patterns:
-                    if re.search(pattern, text):
-                        logger.info(
-                            f"Found pattern '{pattern}' for document type "
-                            f"'{doc_type}'"
-                        )
-                        return ClassifierResult(
-                            document_type=doc_type,
-                            classifier_name=self.__class__.__name__,
-                        )
+            for doc_type, regex_patterns in self.patterns.items():
+                if any(pattern.search(text) for pattern in regex_patterns):
+                    logger.info(f"Classified '{file.filename}' as '{doc_type}'")
+                    return ClassifierResult(
+                        document_type=doc_type,
+                        classifier_name=self.__class__.__name__,
+                    )
 
             return ClassifierResult(classifier_name=self.__class__.__name__)
 
