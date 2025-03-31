@@ -25,10 +25,9 @@ class RegexClassifier(BaseClassifier):
         Returns:
             str: The classification result
         """
-        try:            
+        try:
             extractor = TextExtractorFactory.get_extractor(file)
             text = await extractor.extract_text(file)
-            logger.info(f"Extracted text from file: {file.filename}")
             
             # Convert text to lowercase for case-insensitive matching
             text = text.lower()

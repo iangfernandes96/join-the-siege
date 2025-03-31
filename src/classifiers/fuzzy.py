@@ -25,17 +25,8 @@ class FuzzyClassifier(BaseClassifier):
         Returns:
             ClassifierResult: The classification result
         """
-        try:
-            if not file or not file.filename:
-                logger.error("No file or filename provided")
-                return ClassifierResult(
-                    document_type="unknown",
-                    classifier_name=self.__class__.__name__
-                )
-                
-            filename = file.filename.lower()
-            logger.info(f"Classifying file: {filename}")
-            
+        try: 
+            filename = self._get_filename(file)
             # Calculate similarity scores for each document type
             best_match = None
             best_score = 0
@@ -59,6 +50,7 @@ class FuzzyClassifier(BaseClassifier):
                 )
             
             # If no good match found, try partial matching
+            # Can be skipped, since we are running Filename matching first
             for doc_type, patterns in self.patterns.items():
                 for pattern in patterns:
                     # Check if the pattern is contained within the filename

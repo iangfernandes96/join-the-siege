@@ -38,7 +38,7 @@ async def test_classification(client, file_path, url="http://localhost:8000/clas
             'size': 0
         }
 
-async def run_tests(test_files_dir, num_requests=200):
+async def run_tests(test_files_dir, num_requests=50):
     """Run multiple classification requests."""
     test_files = list(Path(test_files_dir).glob('*'))
     if not test_files:

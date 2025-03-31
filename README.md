@@ -1,15 +1,14 @@
 # Heron File Classifier
 
-A robust document classification system that uses multiple classification strategies to identify document types.
+A document classification system that uses multiple classification strategies to identify document types.
 
 ## Features
 
 - Multiple classification strategies:
-  - Fuzzy string matching
-  - Regular expression patterns
-  - TF-IDF based classification
-  - Filename-based classification
-  - Composite classification (weighted voting)
+  - Fuzzy string matching (using rapidfuzz for efficient string similarity)
+  - Regular expression patterns (for precise pattern matching)
+  - TF-IDF based classification (for semantic similarity)
+  - Filename-based classification (fast, pattern-based classification)
 - Support for various file types:
   - PDFs
   - Word documents
@@ -18,6 +17,7 @@ A robust document classification system that uses multiple classification strate
   - Text files
 - RESTful API with FastAPI
 - Docker support for easy deployment
+- Optimized performance with Uvicorn and uvloop
 
 ## Prerequisites
 
@@ -61,7 +61,9 @@ The application will be available at http://localhost:8000
 
 - `POST /classify_file`: Upload and classify a file
   - Accepts multipart/form-data with a file field
-  - Returns classification result with document type and confidence
+  - Returns classification result with document type and classifier used
+  - Maximum file size: 10MB
+  - Supported file types: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG
 
 ### Example Request
 
@@ -77,9 +79,57 @@ curl -X POST "http://localhost:8000/classify_file" \
 ```json
 {
     "document_type": "bank_statement",
-    "classifier_used": "FuzzyClassifier"
+    "classifier_name": "FuzzyClassifier"
 }
 ```
+
+## Classification Algorithm
+
+The system uses a sequential classification approach with multiple strategies:
+
+1. **Filename Classifier**
+   - Fastest classification method
+   - Uses pattern matching on filenames
+   - Good for standardized naming conventions
+
+2. **Fuzzy Classifier**
+   - Uses rapidfuzz for efficient string similarity matching with filename
+   - Good for handling variations in text
+   - Handles typos and minor text differences
+
+3. **Regex Classifier**
+   - Precise pattern matching using regular expressions over the file text
+   - Good for structured documents
+   - Handles specific document formats
+
+4. **TF-IDF Classifier**
+   - Most complex but potentially most accurate
+   - Uses TF-IDF vectorization for semantic similarity
+   - Good for content-based classification
+
+The system tries each classifier in sequence until a valid result is found. If all classifiers fail, it returns "unknown" as the document type.
+
+## Performance Optimization
+
+The application is optimized for high performance:
+
+### Local Development
+```bash
+make run-uvicorn
+```
+This runs the application with:
+- 4 worker processes
+- uvloop for better async performance
+- 1000 concurrent connections limit
+- 30-second keep-alive timeout
+- Access logging enabled
+
+### Docker Deployment
+The Docker setup includes the same optimizations:
+- 4 Uvicorn workers
+- uvloop for async performance
+- Optimized system dependencies
+- Efficient file handling
 
 ## Testing
 
@@ -95,6 +145,7 @@ make test
 - `make dev`: Create virtual environment and install requirements
 - `make build`: Build Docker image
 - `make run`: Run the application in Docker
+- `make run-uvicorn`: Run the application locally with optimized settings
 - `make test`: Run the test suite
 - `make stop`: Stop the Docker containers
 
@@ -104,14 +155,19 @@ make test
 heron-file-classifier/
 ├── src/
 │   ├── app.py              # FastAPI application
+│   ├── classifier.py       # Main classification logic
 │   ├── classifiers/        # Classification strategies
-│   ├── extractors/         # Text extraction modules
-│   ├── models.py           # Data models
-│   └── config.py           # Configuration
-├── tests/                  # Test suite
-├── files/                  # Upload directory
-├── Dockerfile             # Docker configuration
-├── docker-compose.yml     # Docker Compose configuration
-├── Makefile              # Make commands
-└── requirements.txt      # Python dependencies
+│   │   ├── base.py        # Base classifier interface
+│   │   ├── fuzzy.py       # Fuzzy matching classifier
+│   │   ├── regex.py       # Regex pattern classifier
+│   │   ├── tfidf.py       # TF-IDF based classifier
+│   │   └── filename.py    # Filename pattern classifier
+│   ├── extractors/        # Text extraction modules
+│   ├── models.py          # Data models
+│   └── config.py          # Configuration
+├── tests/                 # Test suite
+├── Dockerfile            # Docker configuration
+├── docker-compose.yml    # Docker Compose configuration
+├── requirements.txt      # Python dependencies
+└── Makefile             # Build and development commands
 ```

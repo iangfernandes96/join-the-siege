@@ -26,7 +26,6 @@ class FilenameClassifier(BaseClassifier):
         """
         try:
             filename = self._get_filename(file)
-            logger.info(f"Classifying file: {filename}")
             
             # Check each document type's patterns
             for doc_type, patterns in self.patterns.items():

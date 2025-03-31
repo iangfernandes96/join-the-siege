@@ -24,71 +24,7 @@ class TFIDFClassifier(BaseClassifier):
         )
         self.classifier = MultinomialNB()
         self.is_trained = False
-        
-        # Training data for each document type
-        self.training_data = {
-            "drivers_licence": [
-                "driver's license application form",
-                "driver license renewal document",
-                "driver's permit application",
-                "driver identification card",
-                "driver's license verification",
-                "driver's license number",
-                "driver's license expiration date",
-                "driver's license photo",
-                "driver's license address",
-                "driver's license class",
-                "driver's license renewal",
-                "driver's license application",
-                "driver's license test",
-                "driver's license requirements",
-                "driver's license office"
-            ],
-            "bank_statement": [
-                "bank account statement",
-                "monthly bank statement",
-                "account transaction history",
-                "banking statement summary",
-                "account balance sheet",
-                "bank statement period",
-                "account statement date",
-                "bank statement transactions",
-                "account statement balance",
-                "account statement details",
-                "bank statement summary",
-                "bank statement period",
-                "bank statement balance",
-                "bank statement transactions",
-                "bank statement account"
-            ],
-            "invoice": [
-                "invoice for services rendered",
-                "payment invoice",
-                "service invoice",
-                "invoice number",
-                "invoice date",
-                "invoice amount due",
-                "invoice payment terms",
-                "invoice billing address",
-                "invoice line items",
-                "invoice total amount",
-                "invoice payment",
-                "invoice details",
-                "invoice summary",
-                "invoice total",
-                "invoice items",
-                "invoice for payment",
-                "invoice to be paid",
-                "invoice due date",
-                "invoice amount",
-                "invoice description",
-                "invoice from",
-                "invoice to",
-                "invoice reference",
-                "invoice status",
-                "invoice type"
-            ]
-        }
+        self.training_data = config.tfidf_training_data
     
     def train(self):
         """Train the classifier with the training data."""
@@ -130,7 +66,6 @@ class TFIDFClassifier(BaseClassifier):
             
             # Extract text from the file
             text = await extractor.extract_text(file)
-            logger.info(f"Extracted text from file: {file.filename}")
             
             # Transform text to TF-IDF features
             X = self.vectorizer.transform([text])

@@ -37,7 +37,7 @@ async def classify_file_route(file: UploadFile = File(default=None)):
     Classify a file into a document type.
     
     Args:
-        file: The file to classify
+        file: The file to classify; Maximum file size is 10MB
         
     Returns:
         ClassificationResponse: Classification result with document type and metadata
@@ -68,10 +68,7 @@ async def classify_file_route(file: UploadFile = File(default=None)):
     
     try:
         result = await classify_file(file)
-        return ClassificationResponse(
-            document_type=result.document_type,
-            classifier_name=result.classifier_name
-        )
+        return result
     except Exception as e:
         error = ClassificationError(
             error="Classification failed",

@@ -47,6 +47,5 @@ class CompositeClassifier(BaseClassifier):
         
         # If no classifier succeeded, return unknown
         return ClassifierResult(
-            document_type="unknown",
             classifier_name=self.__class__.__name__
         ) 
