@@ -53,7 +53,7 @@ make build
 make run
 ```
 
-The application will be available at http://localhost:8000
+The application will be available at http://localhost:8000. API Documentation will be available at http://localhost:8000/docs
 
 ## Usage
 

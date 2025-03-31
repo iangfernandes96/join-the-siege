@@ -78,3 +78,5 @@ this can be deployed as a standalone service if needed, thereby making it access
 
 10. Use poetry for dependency management, use uv for dependency installation.
 
+11. Add pre-commit hooks and linters, for improved code structuring and to remove linter errors.
+
