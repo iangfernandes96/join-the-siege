@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 # Initialize classifiers in order of preference
 classifiers = [
-    FilenameClassifier(),  # Fastest, based on filename patterns
-    FuzzyClassifier(),     # Good for similar text patterns
-    RegexClassifier(),     # Pattern matching
-    TFIDFClassifier(),     # Most complex but potentially most accurate
+    FilenameClassifier(),
+    FuzzyClassifier(),
+    RegexClassifier(),
+    TFIDFClassifier(),
 ]
 
 classifier = CompositeClassifier(classifiers)

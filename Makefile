@@ -1,4 +1,4 @@
-.PHONY: venv install build run test clean dev stop run-uvicorn
+.PHONY: venv install build run test dev stop run-uvicorn
 
 # Create virtual environment
 venv:

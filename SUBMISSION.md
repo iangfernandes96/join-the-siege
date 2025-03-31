@@ -53,6 +53,8 @@ this can be deployed as a standalone service if needed, thereby making it access
 
 6. Added a Makefile for easier setup and testing
 
+7. Added checks for filename and file size, along with extending the list of allowed extensions.
+
 
 ## Potential Improvements
 
@@ -73,4 +75,6 @@ this can be deployed as a standalone service if needed, thereby making it access
 8. Better edge case handling, handling corrupted files, checking files for vulnerabilities before processing.
 
 9. Add Prometheus metrics, for better visibility into application metrics
+
+10. Use poetry for dependency management, use uv for dependency installation.
 
