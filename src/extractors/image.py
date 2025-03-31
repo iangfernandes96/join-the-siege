@@ -7,17 +7,17 @@ from .base import BaseTextExtractor
 
 class ImageExtractor(BaseTextExtractor):
     """Extractor for image files using pytesseract OCR."""
-    
+
     async def extract_text(self, file: UploadFile) -> str:
         """
         Extract text from an image using OCR.
-        
+
         Args:
             file: The uploaded image file
-            
+
         Returns:
             str: The extracted text
-            
+
         Raises:
             ValueError: If the image cannot be processed
         """

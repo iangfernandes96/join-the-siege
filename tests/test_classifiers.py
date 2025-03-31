@@ -16,30 +16,21 @@ def sample_file():
         b"This is a sample bank statement with account details "
         b"and transaction history."
     )
-    return UploadFile(
-        file=BytesIO(content),
-        filename="bank_statement.pdf"
-    )
+    return UploadFile(file=BytesIO(content), filename="bank_statement.pdf")
 
 
 @pytest.fixture
 def sample_invoice_file():
     """Create a sample invoice file for testing."""
     content = b"INVOICE\nBill to: John Doe\nAmount due: $100\nPayment terms: Net 30"
-    return UploadFile(
-        file=BytesIO(content),
-        filename="invoice.pdf"
-    )
+    return UploadFile(file=BytesIO(content), filename="invoice.pdf")
 
 
 @pytest.fixture
 def sample_drivers_license_file():
     """Create a sample drivers license file for testing."""
     content = b"DRIVER'S LICENSE\nName: John Doe\nDL Number: 123456789"
-    return UploadFile(
-        file=BytesIO(content),
-        filename="drivers_license.pdf"
-    )
+    return UploadFile(file=BytesIO(content), filename="drivers_license.pdf")
 
 
 @pytest.mark.asyncio
@@ -75,11 +66,7 @@ async def test_tfidf_classifier(sample_drivers_license_file):
 @pytest.mark.asyncio
 async def test_composite_classifier(sample_file):
     """Test composite classifier with multiple classifiers."""
-    classifiers = [
-        FuzzyClassifier(),
-        RegexClassifier(),
-        TFIDFClassifier()
-    ]
+    classifiers = [FuzzyClassifier(), RegexClassifier(), TFIDFClassifier()]
     classifier = CompositeClassifier(classifiers=classifiers)
     result = await classifier.classify(sample_file)
     assert isinstance(result, ClassifierResult)
@@ -115,4 +102,4 @@ async def test_classifier_empty_file():
     result = await classifier.classify(empty_file)
     assert isinstance(result, ClassifierResult)
     assert result.document_type == "unknown"
-    assert result.classifier_name == "FuzzyClassifier" 
+    assert result.classifier_name == "FuzzyClassifier"

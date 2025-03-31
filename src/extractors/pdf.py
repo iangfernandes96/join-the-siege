@@ -11,17 +11,17 @@ logger = logging.getLogger(__name__)
 
 class PDFExtractor(BaseTextExtractor):
     """Extractor for PDF files using pdfplumber."""
-    
+
     async def extract_text(self, file: UploadFile) -> str:
         """
         Extract text from a PDF file.
-        
+
         Args:
             file: The uploaded PDF file
-            
+
         Returns:
             str: The extracted text
-            
+
         Raises:
             ValueError: If the PDF cannot be processed
         """
@@ -35,14 +35,18 @@ class PDFExtractor(BaseTextExtractor):
                             page_text = page.extract_text()
                             if page_text:
                                 text += page_text + "\n"
-                            logger.info(f"Successfully extracted text from page {page_num}")
+                            logger.info(
+                                f"Successfully extracted text from page {page_num}"
+                            )
                         except Exception as e:
-                            logger.warning(f"Failed to extract text from page {page_num}: {str(e)}")
+                            logger.warning(
+                                f"Failed to extract text from page {page_num}: {str(e)}"
+                            )
                             continue
-                    
+
                     if not text.strip():
                         raise ValueError("No text could be extracted from the PDF")
-                        
+
                     return text.strip()
         except Exception as e:
             logger.error(f"Failed to process PDF: {str(e)}")
