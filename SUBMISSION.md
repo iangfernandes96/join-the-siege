@@ -60,6 +60,7 @@ this can be deployed as a standalone service if needed, thereby making it access
 
 1. Classification improvements:
     - We could extend the content based classification capabilities by making use of LLMs (hosted/paid models). We could extract the text content of files passed, and pass it to LLMs, which can classify it based on the file content.
+    - Based on success metrics for fuzzy/tf-idf classification, we may need to fine tune the thresholds
 
 2. Batch processing: We could allow for batches of files to be uploaded, for bulk classification. Depending on the performance capabilities, this may need to be exposed as an asynchronous funcitonality, ie, user uploads a batch of files and gets a job id in the response. Once the classifcation is complete, either user fetches the result, or a webhook notification can be sent.
 
