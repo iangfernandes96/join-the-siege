@@ -1,29 +1,70 @@
-from flask import Flask, request, jsonify
-
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from src.classifier import classify_file
-app = Flask(__name__)
+from src.models import ClassificationError, ClassificationResponse
+from src.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
 
-ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+app = FastAPI(
+    title="Heron File Classifier",
+    description="API for classifying files based on content and metadata",
+    version="1.0.0",
+)
 
-@app.route('/classify_file', methods=['POST'])
-def classify_file_route():
 
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+def allowed_file(filename: str) -> bool:
+    """Check if the file extension is allowed."""
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
+
+@app.post("/classify_file", response_model=ClassificationResponse)
+async def classify_file_route(file: UploadFile = File(default=None)):
+    """
+    Classify a file into a document type.
+
+    Args:
+        file: The file to classify; Maximum file size is 10MB
+
+    Returns:
+        ClassificationResponse: Classification result with document type and metadata
+    """
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file or filename provided")
 
     if not allowed_file(file.filename):
-        return jsonify({"error": f"File type not allowed"}), 400
+        allowed = ", ".join(ALLOWED_EXTENSIONS)
+        raise HTTPException(
+            status_code=400, detail=f"File type not allowed. Allowed types: {allowed}"
+        )
 
-    file_class = classify_file(file)
-    return jsonify({"file_class": file_class}), 200
+    # Check file size using seek() and tell()
+    file.file.seek(0, 2)  # Move to the end of the file
+    file_size = file.file.tell()  # Get current position (file size)
+    file.file.seek(0)  # Reset position for classification
+
+    if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
+        )
+
+    try:
+        result = await classify_file(file)
+        return result
+    except Exception as e:
+        error = ClassificationError(error="Classification failed", details=str(e))
+        raise HTTPException(status_code=500, detail=error.model_dump())
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=8000,
+        workers=4,
+        loop="uvloop",
+        limit_concurrency=1000,
+        timeout_keep_alive=30,
+        access_log=True,
+    )

@@ -1,6 +1,14 @@
-venv
+venv/
+__pycache__/
+*.pyc
 .DS_Store
+files/*
+!files/.gitkeep
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+*.log
 .idea
 .vscode
-__pycache__
-*.pyc
+*.txt

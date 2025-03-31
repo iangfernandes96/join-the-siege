@@ -1,76 +1,183 @@
-# Heron Coding Challenge - File Classifier
+# Heron File Classifier
 
-## Overview
+A document classification system that uses multiple classification strategies to identify document types.
 
-At Heron, we’re using AI to automate document processing workflows in financial services and beyond. Each day, we handle over 100,000 documents that need to be quickly identified and categorised before we can kick off the automations.
+Please refer to SUBMISSION.md, for a detailed explanation on the submission.
 
-This repository provides a basic endpoint for classifying files by their filenames. However, the current classifier has limitations when it comes to handling poorly named files, processing larger volumes, and adapting to new industries effectively.
+## Features
 
-**Your task**: improve this classifier by adding features and optimisations to handle (1) poorly named files, (2) scaling to new industries, and (3) processing larger volumes of documents.
+- Multiple classification strategies:
+  - Fuzzy string matching (using rapidfuzz for efficient string similarity)
+  - Regular expression patterns (for precise pattern matching)
+  - TF-IDF based classification (for semantic similarity)
+  - Filename-based classification (fast, pattern-based classification)
+- Support for various file types:
+  - PDFs
+  - Word documents
+  - Excel files
+  - Images (with OCR)
+  - Text files
+- RESTful API with FastAPI
+- Docker support for easy deployment
+- Optimized performance with Uvicorn and uvloop
 
-This is a real-world challenge that allows you to demonstrate your approach to building innovative and scalable AI solutions. We’re excited to see what you come up with! Feel free to take it in any direction you like, but we suggest:
+## Prerequisites
 
+- Python 3.12+
+- Docker and Docker Compose
+- Make
 
-### Part 1: Enhancing the Classifier
+## Running the Application
+You can run the application either via Docker (recommended) or locally. Follow the instructions below depending on your preferred setup.
 
-- What are the limitations in the current classifier that's stopping it from scaling?
-- How might you extend the classifier with additional technologies, capabilities, or features?
+### Docker Setup
 
+1. Build the Docker image:
+```bash
+make build
+```
 
-### Part 2: Productionising the Classifier 
+2. Run the application:
+```bash
+make run
+```
 
-- How can you ensure the classifier is robust and reliable in a production environment?
-- How can you deploy the classifier to make it accessible to other services and users?
+### Local Development Setup
 
-We encourage you to be creative! Feel free to use any libraries, tools, services, models or frameworks of your choice
-
-### Possible Ideas / Suggestions
-- Train a classifier to categorize files based on the text content of a file
-- Generate synthetic data to train the classifier on documents from different industries
-- Detect file type and handle other file formats (e.g., Word, Excel)
-- Set up a CI/CD pipeline for automatic testing and deployment
-- Refactor the codebase to make it more maintainable and scalable
-
-## Marking Criteria
-- **Functionality**: Does the classifier work as expected?
-- **Scalability**: Can the classifier scale to new industries and higher volumes?
-- **Maintainability**: Is the codebase well-structured and easy to maintain?
-- **Creativity**: Are there any innovative or creative solutions to the problem?
-- **Testing**: Are there tests to validate the service's functionality?
-- **Deployment**: Is the classifier ready for deployment in a production environment?
-
-
-## Getting Started
 1. Clone the repository:
-    ```shell
-    git clone <repository_url>
-    cd heron_classifier
-    ```
+```bash
+git clone https://github.com/iangfernandes96/join-the-siege.git
+cd heron-file-classifier
+```
 
-2. Install dependencies:
-    ```shell
-    python -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-    ```
+2. Create virtual environment and install dependencies:
+```bash
+make dev
+```
 
-3. Run the Flask app:
-    ```shell
-    python -m src.app
-    ```
+3. Run app locally
+```bash
+make run-uvicorn
+```
+The first time you run the app via `make run-uvicorn`, it may take a few seconds longer to start due to the training for the TF-IDF model. Subsequent startups will be much faster.
 
-4. Test the classifier using a tool like curl:
-    ```shell
-    curl -X POST -F 'file=@path_to_pdf.pdf' http://127.0.0.1:5000/classify_file
-    ```
+The application will be available at http://localhost:8000. API Documentation will be available at http://localhost:8000/docs
 
-5. Run tests:
-   ```shell
-    pytest
-    ```
+## Usage
 
-## Submission
+### API Endpoints
 
-Please aim to spend 3 hours on this challenge.
+- `POST /classify_file`: Upload and classify a file
+  - Accepts multipart/form-data with a file field
+  - Returns classification result with document type and classifier used
+  - Maximum file size: 10MB
+  - Supported file types: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG
 
-Once completed, submit your solution by sharing a link to your forked repository. Please also provide a brief write-up of your ideas, approach, and any instructions needed to run your solution. 
+### Example Request
+
+```bash
+curl -X POST "http://localhost:8000/classify_file" \
+     -H "accept: application/json" \
+     -H "Content-Type: multipart/form-data" \
+     -F "file=@/path/to/your/document.pdf"
+```
+
+### Example Response
+
+```json
+{
+    "document_type": "bank_statement",
+    "classifier_name": "FuzzyClassifier"
+}
+```
+
+## Classification Algorithm
+
+The system uses a sequential classification approach with multiple strategies. The implementations are present in `src/classifiers/`:
+
+1. **Filename Classifier**
+   - Fastest classification method
+   - Uses pattern matching on filenames
+   - Good for files that follow standardized naming conventions
+
+2. **Fuzzy Classifier**
+   - Uses rapidfuzz for efficient string similarity matching with filename
+   - Good for handling variations in text
+   - Handles typos and minor text differences in filenames
+
+3. **Regex Classifier**
+   - Precise pattern matching using regular expressions over the file text
+   - Good for structured documents
+   - Handles specific document formats
+
+4. **TF-IDF Classifier**
+   - Most complex but potentially most accurate
+   - Uses TF-IDF vectorization for semantic similarity, with Naive-Bayes method of classification
+   - Good for content-based classification
+
+The system tries each classifier in sequence until a valid result is found. If all classifiers fail, it returns "unknown" as the document type.
+
+### Local Development
+```bash
+make run-uvicorn
+```
+This runs the application with:
+- 4 worker processes
+- uvloop for better async performance
+- 1000 concurrent connections limit
+- 30-second keep-alive timeout
+
+### Docker Deployment
+The Docker setup includes the same optimizations:
+- 4 Uvicorn workers
+- uvloop for async performance
+- Optimized system dependencies
+- Efficient file handling
+
+## Testing
+
+Run the test suite:
+```bash
+make test
+```
+
+## Development
+
+### Available Make Commands
+
+- `make dev`: Create virtual environment and install requirements
+- `make build`: Build Docker image
+- `make run`: Run the application in Docker
+- `make run-uvicorn`: Run the application locally with optimized settings
+- `make test`: Run the test suite
+- `make stop`: Stop the Docker containers
+
+### Project Structure
+
+```
+heron-file-classifier/
+├── src/
+│   ├── app.py              # FastAPI application
+│   ├── classifier.py       # Main classification logic
+│   ├── classifiers/        # Classification strategies
+│   │   ├── base.py        # Base classifier interface
+│   │   ├── fuzzy.py       # Fuzzy matching classifier
+│   │   ├── regex.py       # Regex pattern classifier
+│   │   ├── tfidf.py       # TF-IDF based classifier
+│   │   └── filename.py    # Filename pattern classifier
+│   ├── extractors/        # Text extraction modules
+│   │   ├── base.py        # Base extractor interface
+│   │   ├── docx.py        # Text extractor for docx
+│   │   ├── excel.py       # Text extractor for excel
+│   │   ├── factory.py     # Extractor for all file types
+│   │   └── image.py       # Text extractor for images
+│   │   ├── pdf.py         # Text extractor for pdfs
+│   │   └── text.py        # Text extractor for text files
+│   ├── models.py          # Data models
+│   └── config.py          # Configuration
+├── tests/                 # Test suite
+├── Dockerfile            # Docker configuration
+├── docker-compose.yml    # Docker Compose configuration
+├── requirements.txt      # Python dependencies
+└── Makefile             # Build and development commands
+```
