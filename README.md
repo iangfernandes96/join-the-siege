@@ -109,10 +109,6 @@ The system uses a sequential classification approach with multiple strategies:
 
 The system tries each classifier in sequence until a valid result is found. If all classifiers fail, it returns "unknown" as the document type.
 
-## Performance Optimization
-
-The application is optimized for high performance:
-
 ### Local Development
 ```bash
 make run-uvicorn
