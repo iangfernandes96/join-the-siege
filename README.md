@@ -43,6 +43,11 @@ make dev
 source venv/bin/activate
 ```
 
+3. Run app locally
+```bash
+make run-uvicorn
+```
+
 ### Docker Setup
 
 1. Build the Docker image:
@@ -87,17 +92,17 @@ curl -X POST "http://localhost:8000/classify_file" \
 
 ## Classification Algorithm
 
-The system uses a sequential classification approach with multiple strategies:
+The system uses a sequential classification approach with multiple strategies. The implementations are present in `src/classifiers/`:
 
 1. **Filename Classifier**
    - Fastest classification method
    - Uses pattern matching on filenames
-   - Good for standardized naming conventions
+   - Good for files that follow standardized naming conventions
 
 2. **Fuzzy Classifier**
    - Uses rapidfuzz for efficient string similarity matching with filename
    - Good for handling variations in text
-   - Handles typos and minor text differences
+   - Handles typos and minor text differences in filenames
 
 3. **Regex Classifier**
    - Precise pattern matching using regular expressions over the file text
@@ -106,7 +111,7 @@ The system uses a sequential classification approach with multiple strategies:
 
 4. **TF-IDF Classifier**
    - Most complex but potentially most accurate
-   - Uses TF-IDF vectorization for semantic similarity
+   - Uses TF-IDF vectorization for semantic similarity, with Naive-Bayes method of classification
    - Good for content-based classification
 
 The system tries each classifier in sequence until a valid result is found. If all classifiers fail, it returns "unknown" as the document type.
@@ -120,7 +125,6 @@ This runs the application with:
 - uvloop for better async performance
 - 1000 concurrent connections limit
 - 30-second keep-alive timeout
-- Access logging enabled
 
 ### Docker Deployment
 The Docker setup includes the same optimizations:
@@ -161,6 +165,13 @@ heron-file-classifier/
 │   │   ├── tfidf.py       # TF-IDF based classifier
 │   │   └── filename.py    # Filename pattern classifier
 │   ├── extractors/        # Text extraction modules
+│   │   ├── base.py        # Base extractor interface
+│   │   ├── docx.py        # Text extractor for docx
+│   │   ├── excel.py       # Text extractor for excel
+│   │   ├── factory.py     # Extractor for all file types
+│   │   └── image.py       # Text extractor for images
+│   │   ├── pdf.py         # Text extractor for pdfs
+│   │   └── text.py        # Text extractor for text files
 │   ├── models.py          # Data models
 │   └── config.py          # Configuration
 ├── tests/                 # Test suite

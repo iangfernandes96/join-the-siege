@@ -48,21 +48,6 @@ class FuzzyClassifier(BaseClassifier):
                     document_type=best_match, classifier_name=self.__class__.__name__
                 )
 
-            # If no good match found, try partial matching
-            # Can be skipped, since we are running Filename matching first
-            for doc_type, patterns in self.patterns.items():
-                for pattern in patterns:
-                    # Check if the pattern is contained within the filename
-                    if pattern in filename:
-                        logger.info(
-                            f"Classified as '{doc_type}' using partial "
-                            f"match with '{pattern}'"
-                        )
-                        return ClassifierResult(
-                            document_type=doc_type,
-                            classifier_name=self.__class__.__name__,
-                        )
-
             logger.info(
                 f"No good match found (best score: {best_score:.1f}), "
                 "returning unknown"
