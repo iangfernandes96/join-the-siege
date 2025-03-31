@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from src.classifier import classify_file
 from src.models import ClassificationError, ClassificationResponse
 from src.config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
+from src.utils.request_validation import allowed_file, file_size_check
 
 
 app = FastAPI(
@@ -9,11 +10,6 @@ app = FastAPI(
     description="API for classifying files based on content and metadata",
     version="1.0.0",
 )
-
-
-def allowed_file(filename: str) -> bool:
-    """Check if the file extension is allowed."""
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.post("/classify_file", response_model=ClassificationResponse)
@@ -36,12 +32,7 @@ async def classify_file_route(file: UploadFile = File(default=None)):
             status_code=400, detail=f"File type not allowed. Allowed types: {allowed}"
         )
 
-    # Check file size using seek() and tell()
-    file.file.seek(0, 2)  # Move to the end of the file
-    file_size = file.file.tell()  # Get current position (file size)
-    file.file.seek(0)  # Reset position for classification
-
-    if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
+    if not await file_size_check(file):
         raise HTTPException(
             status_code=400,
             detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
