@@ -2,6 +2,8 @@
 
 A document classification system that uses multiple classification strategies to identify document types.
 
+Please refer to SUBMISSION.md, for a detailed explanation on the submission.
+
 ## Features
 
 - Multiple classification strategies:

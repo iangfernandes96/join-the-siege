@@ -36,19 +36,16 @@ async def classify_file_route(file: UploadFile = File(default=None)):
             status_code=400, detail=f"File type not allowed. Allowed types: {allowed}"
         )
 
-    # Check file size with chunked reading
-    file_size = 0
-    chunk_size = 1024 * 1024  # 1MB chunks
-    while chunk := await file.read(chunk_size):
-        file_size += len(chunk)
-        if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
-            raise HTTPException(
-                status_code=400,
-                detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
-            )
+    # Check file size using seek() and tell()
+    file.file.seek(0, 2)  # Move to the end of the file
+    file_size = file.file.tell()  # Get current position (file size)
+    file.file.seek(0)  # Reset position for classification
 
-    # Reset file position for classification
-    await file.seek(0)
+    if file_size > MAX_FILE_SIZE_MB * 1024 * 1024:
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
+        )
 
     try:
         result = await classify_file(file)
