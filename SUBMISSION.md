@@ -53,7 +53,7 @@ this can be deployed as a standalone service if needed, thereby making it access
 
 6. Added a Makefile for easier setup and testing
 
-7. Added checks for filename and file size, along with extending the list of allowed extensions.
+7. Added checks for filename and file size, along with extending the list of allowed extensions. Also added basic checking against file MIME types.
 
 
 ## Potential Improvements

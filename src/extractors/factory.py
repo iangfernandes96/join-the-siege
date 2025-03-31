@@ -7,6 +7,11 @@ from .excel import ExcelExtractor
 from .image import ImageExtractor
 from .text import TextExtractor
 from ..config import config
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class TextExtractorFactory:
@@ -69,7 +74,7 @@ class TextExtractorFactory:
             else:
                 raise ValueError(f"Unsupported MIME type: {mime_type}")
         except Exception as e:
-            print(f"Error occurred with mime type checking: {str(e)}")
+            logger.warning(f"Error occurred with mime type checking: {str(e)}")
 
         # Get the appropriate extractor based on extension
         if extension in cls._extractors:
