@@ -33,9 +33,6 @@ class RegexClassifier(BaseClassifier):
         extractor = TextExtractorFactory.get_extractor(file)
         text = await extractor.extract_text(file)
 
-        # Convert text to lowercase for case-insensitive matching
-        text = text.lower()
-
         for doc_type, regex_patterns in self.patterns.items():
             if any(pattern.search(text) for pattern in regex_patterns):
                 logger.info(f"Classified '{file.filename}' as '{doc_type}'")
