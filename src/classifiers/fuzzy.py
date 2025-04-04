@@ -4,6 +4,7 @@ from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
 from ..utils.decorators import handle_classifier_errors
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +26,7 @@ class FuzzyClassifier(BaseClassifier):
         Returns:
             ClassifierResult: The classification result
         """
-        
+
         # Calculate similarity scores for each document type
         best_match = None
         best_score = 0
@@ -48,9 +49,6 @@ class FuzzyClassifier(BaseClassifier):
             )
 
         logger.info(
-            f"No good match found (best score: {best_score:.1f}), "
-            "returning unknown"
+            f"No good match found (best score: {best_score:.1f}), " "returning unknown"
         )
         return ClassifierResult(classifier_name=self.__class__.__name__)
-
-

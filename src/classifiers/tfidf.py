@@ -6,6 +6,7 @@ from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
 from ..utils.decorators import handle_classifier_errors
+
 # Set up logging
 logger = logging.getLogger(__name__)
 

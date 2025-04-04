@@ -39,5 +39,3 @@ class FilenameClassifier(BaseClassifier):
 
         logger.info("No matching patterns found, returning unknown")
         return ClassifierResult(classifier_name=self.__class__.__name__)
-
-

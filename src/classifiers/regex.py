@@ -39,5 +39,3 @@ class RegexClassifier(BaseClassifier):
                 )
 
         return ClassifierResult(classifier_name=self.__class__.__name__)
-
-
