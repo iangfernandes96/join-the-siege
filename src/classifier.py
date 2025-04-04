@@ -6,6 +6,7 @@ from .classifiers.tfidf import TFIDFClassifier
 from .classifiers.fuzzy import FuzzyClassifier
 from .classifiers.composite import CompositeClassifier
 from .models import ClassificationResponse
+from .extractors.factory import TextExtractorFactory
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,9 @@ async def classify_file(file: UploadFile) -> ClassificationResponse:
         ClassificationResponse: The classification result with metadata
     """
     try:
-        result = await classifier.classify(file)
+        filename = file.filename
+        content = await TextExtractorFactory.get_extractor(file).extract_text(file)
+        result = await classifier.classify(filename, content)
         return ClassificationResponse(
             document_type=result.document_type, classifier_name=result.classifier_name
         )

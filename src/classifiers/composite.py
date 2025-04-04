@@ -20,7 +20,7 @@ class CompositeClassifier(BaseClassifier):
         """
         self.classifiers = classifiers
 
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file using multiple classifiers in sequence.
 
@@ -32,7 +32,7 @@ class CompositeClassifier(BaseClassifier):
         """
         for classifier in self.classifiers:
             try:
-                result = await classifier.classify(file)
+                result = await classifier.classify(filename, content)
                 if result.document_type != "unknown":
                     return ClassifierResult(
                         document_type=result.document_type,

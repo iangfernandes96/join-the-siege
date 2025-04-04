@@ -15,7 +15,7 @@ class FuzzyClassifier(BaseClassifier):
         self.patterns = config.patterns.model_dump()
         self.similarity_threshold = config.classifier.similarity_threshold
 
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file using fuzzy string matching on the filename.
 
@@ -26,7 +26,6 @@ class FuzzyClassifier(BaseClassifier):
             ClassifierResult: The classification result
         """
         try:
-            filename = self._get_filename(file)
             # Calculate similarity scores for each document type
             best_match = None
             best_score = 0

@@ -14,7 +14,7 @@ class FilenameClassifier(BaseClassifier):
         # Keywords and patterns for each document type
         self.patterns = config.patterns.model_dump()
 
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file based on its filename.
 
@@ -25,8 +25,6 @@ class FilenameClassifier(BaseClassifier):
             ClassifierResult: The classification result
         """
         try:
-            filename = self._get_filename(file)
-
             # Check each document type's patterns
             for doc_type, patterns in self.patterns.items():
                 for pattern in patterns:

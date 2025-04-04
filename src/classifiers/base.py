@@ -7,7 +7,7 @@ class BaseClassifier(ABC):
     """Base class for all document classifiers."""
 
     @abstractmethod
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file.
 

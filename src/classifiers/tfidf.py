@@ -47,12 +47,13 @@ class TFIDFClassifier(BaseClassifier):
         self.is_trained = True
         logger.info("TF-IDF classifier trained successfully")
 
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file using TF-IDF and Naïve Bayes.
 
         Args:
-            file: The uploaded file to classify
+            filename: The name of the file
+            content: The text content of the file
 
         Returns:
             ClassifierResult: The classification result
@@ -62,13 +63,10 @@ class TFIDFClassifier(BaseClassifier):
             if not self.is_trained:
                 self.train()
 
-            extractor = TextExtractorFactory.get_extractor(file)
-
-            # Extract text from the file
-            text = await extractor.extract_text(file)
+            # Transform text to TF-IDF features
 
             # Transform text to TF-IDF features
-            X = self.vectorizer.transform([text])
+            X = self.vectorizer.transform([content])
 
             # Get prediction and probabilities
             prediction = self.classifier.predict(X)[0]

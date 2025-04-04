@@ -1,10 +1,8 @@
 import re
 import logging
-from fastapi import UploadFile
 from .base import BaseClassifier
 from ..models import ClassifierResult
 from ..config import config
-from ..extractors.factory import TextExtractorFactory
 
 logger = logging.getLogger(__name__)
 
@@ -18,26 +16,21 @@ class RegexClassifier(BaseClassifier):
             for doc_type, doc_patterns in config.regex_patterns.model_dump().items()
         }
 
-    async def classify(self, file: UploadFile) -> ClassifierResult:
+    async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file based on regex patterns in its content.
 
         Args:
-            file: The uploaded file to classify
+            filename: The name of the file
+            content: The text content of the file
 
         Returns:
             str: The classification result
         """
         try:
-            extractor = TextExtractorFactory.get_extractor(file)
-            text = await extractor.extract_text(file)
-
-            # Convert text to lowercase for case-insensitive matching
-            text = text.lower()
-
             for doc_type, regex_patterns in self.patterns.items():
-                if any(pattern.search(text) for pattern in regex_patterns):
-                    logger.info(f"Classified '{file.filename}' as '{doc_type}'")
+                if any(pattern.search(content) for pattern in regex_patterns):
+                    logger.info(f"Classified '{filename}' as '{doc_type}'")
                     return ClassifierResult(
                         document_type=doc_type,
                         classifier_name=self.__class__.__name__,
