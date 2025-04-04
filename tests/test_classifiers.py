@@ -6,7 +6,7 @@ from src.classifiers.regex import RegexClassifier
 from src.classifiers.tfidf import TFIDFClassifier
 from src.classifiers.composite import CompositeClassifier
 from src.classifiers.filename import FilenameClassifier
-from src.models import ClassifierResult
+from src.models import ClassifierResult, ClassificationError
 
 
 @pytest.fixture
@@ -89,9 +89,7 @@ async def test_classifier_no_file():
     """Test classifier behavior with no file."""
     classifier = FuzzyClassifier()
     result = await classifier.classify(None)
-    assert isinstance(result, ClassifierResult)
-    assert result.document_type == "unknown"
-    assert result.classifier_name == "FuzzyClassifier"
+    assert isinstance(result, ClassificationError)
 
 
 @pytest.mark.asyncio
