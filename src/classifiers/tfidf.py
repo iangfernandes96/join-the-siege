@@ -1,12 +1,10 @@
 import logging
-from fastapi import UploadFile
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
-from ..extractors.factory import TextExtractorFactory
 
 # Set up logging
 logger = logging.getLogger(__name__)

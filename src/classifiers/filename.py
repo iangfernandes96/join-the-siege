@@ -1,5 +1,4 @@
 import logging
-from fastapi import UploadFile
 from .base import BaseClassifier
 from ..models import ClassifierResult
 from ..config import config

@@ -1,5 +1,4 @@
 import logging
-from fastapi import UploadFile
 from rapidfuzz import process
 from .base import BaseClassifier
 from ..config import config
