@@ -5,7 +5,7 @@ from sklearn.naive_bayes import MultinomialNB
 from .base import BaseClassifier
 from ..config import config
 from ..models import ClassifierResult
-
+from ..utils.decorators import handle_classifier_errors
 # Set up logging
 logger = logging.getLogger(__name__)
 
@@ -45,6 +45,7 @@ class TFIDFClassifier(BaseClassifier):
         self.is_trained = True
         logger.info("TF-IDF classifier trained successfully")
 
+    @handle_classifier_errors
     async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file using TF-IDF and Naïve Bayes.
@@ -56,36 +57,31 @@ class TFIDFClassifier(BaseClassifier):
         Returns:
             ClassifierResult: The classification result
         """
-        try:
-            # Train the classifier if not already trained
-            if not self.is_trained:
-                self.train()
+        # Train the classifier if not already trained
+        if not self.is_trained:
+            self.train()
 
-            # Transform text to TF-IDF features
+        # Transform text to TF-IDF features
 
-            # Transform text to TF-IDF features
-            X = self.vectorizer.transform([content])
+        # Transform text to TF-IDF features
+        X = self.vectorizer.transform([content])
 
-            # Get prediction and probabilities
-            prediction = self.classifier.predict(X)[0]
-            probabilities = self.classifier.predict_proba(X)[0]
-            confidence = np.max(probabilities)
+        # Get prediction and probabilities
+        prediction = self.classifier.predict(X)[0]
+        probabilities = self.classifier.predict_proba(X)[0]
+        confidence = np.max(probabilities)
 
-            # Only return prediction if confidence is high enough
-            if confidence >= config.classifier.confidence_threshold:
-                logger.info(
-                    f"Classified as '{prediction}' with confidence " f"{confidence:.2f}"
-                )
-                return ClassifierResult(
-                    document_type=prediction, classifier_name=self.__class__.__name__
-                )
-
+        # Only return prediction if confidence is high enough
+        if confidence >= config.classifier.confidence_threshold:
             logger.info(
-                f"Low confidence prediction ({confidence:.2f}) for "
-                f"'{prediction}', returning unknown"
+                f"Classified as '{prediction}' with confidence " f"{confidence:.2f}"
             )
-            return ClassifierResult(classifier_name=self.__class__.__name__)
+            return ClassifierResult(
+                document_type=prediction, classifier_name=self.__class__.__name__
+            )
 
-        except Exception as e:
-            logger.error(f"Error during TF-IDF classification: {str(e)}")
-            return ClassifierResult(classifier_name=self.__class__.__name__)
+        logger.info(
+            f"Low confidence prediction ({confidence:.2f}) for "
+            f"'{prediction}', returning unknown"
+        )
+        return ClassifierResult(classifier_name=self.__class__.__name__)

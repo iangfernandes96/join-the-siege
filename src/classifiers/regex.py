@@ -3,6 +3,7 @@ import logging
 from .base import BaseClassifier
 from ..models import ClassifierResult
 from ..config import config
+from ..utils.decorators import handle_classifier_errors
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +17,7 @@ class RegexClassifier(BaseClassifier):
             for doc_type, doc_patterns in config.regex_patterns.model_dump().items()
         }
 
+    @handle_classifier_errors
     async def classify(self, filename: str, content: str) -> ClassifierResult:
         """
         Classify a file based on regex patterns in its content.
@@ -27,17 +29,15 @@ class RegexClassifier(BaseClassifier):
         Returns:
             str: The classification result
         """
-        try:
-            for doc_type, regex_patterns in self.patterns.items():
-                if any(pattern.search(content) for pattern in regex_patterns):
-                    logger.info(f"Classified '{filename}' as '{doc_type}'")
-                    return ClassifierResult(
-                        document_type=doc_type,
-                        classifier_name=self.__class__.__name__,
-                    )
 
-            return ClassifierResult(classifier_name=self.__class__.__name__)
+        for doc_type, regex_patterns in self.patterns.items():
+            if any(pattern.search(content) for pattern in regex_patterns):
+                logger.info(f"Classified '{filename}' as '{doc_type}'")
+                return ClassifierResult(
+                    document_type=doc_type,
+                    classifier_name=self.__class__.__name__,
+                )
 
-        except Exception as e:
-            logger.error(f"Error during regex classification: {str(e)}")
-            return ClassifierResult(classifier_name=self.__class__.__name__)
+        return ClassifierResult(classifier_name=self.__class__.__name__)
+
+
