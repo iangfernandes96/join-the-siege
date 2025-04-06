@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class PDFExtractor(BaseTextExtractor):
     """Extractor for PDF files using pdfplumber."""
 
-    async def _extract_text_handler(self, file: UploadFile) -> str:
+    async def extract_text(self, file: UploadFile) -> str:
         """
         Extract text from a PDF file.
 
@@ -25,20 +25,31 @@ class PDFExtractor(BaseTextExtractor):
         Raises:
             ValueError: If the PDF cannot be processed
         """
-        content = await file.read()
-        with BytesIO(content) as pdf_file:
-            with pdfplumber.open(pdf_file) as pdf:
-                text = ""
-                for page_num, page in enumerate(pdf.pages, 1):
-                    try:
-                        page_text = page.extract_text()
-                        if page_text:
-                            text += page_text + "\n"
-                    except Exception:
-                        continue
+        try:
+            content = await file.read()
+            with BytesIO(content) as pdf_file:
+                with pdfplumber.open(pdf_file) as pdf:
+                    text = ""
+                    for page_num, page in enumerate(pdf.pages, 1):
+                        try:
+                            page_text = page.extract_text()
+                            if page_text:
+                                text += page_text + "\n"
+                            logger.info(
+                                f"Successfully extracted text from page {page_num}"
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                f"Failed to extract text from page {page_num}: {str(e)}"
+                            )
+                            continue
 
-                if not text.strip():
-                    raise ValueError("No text could be extracted from the PDF")
+                    if not text.strip():
+                        raise ValueError("No text could be extracted from the PDF")
 
-                return text.strip()
-
+                    return text.strip()
+        except Exception as e:
+            logger.error(f"Failed to process PDF: {str(e)}")
+            raise ValueError(f"Failed to extract text from PDF: {str(e)}")
+        finally:
+            await file.seek(0)

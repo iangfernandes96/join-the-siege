@@ -6,13 +6,6 @@ class BaseTextExtractor(ABC):
     """Base class for text extraction from different file types."""
 
     @abstractmethod
-    async def _extract_text_handler(self, file: UploadFile) -> str:
-        """
-        Custom handler to be implemented by subclasses
-        for text extraction from the given file.
-        """
-        pass
-
     async def extract_text(self, file: UploadFile) -> str:
         """
         Extract text from the given file.
@@ -26,9 +19,4 @@ class BaseTextExtractor(ABC):
         Raises:
             ValueError: If the file cannot be processed
         """
-        try:
-            return await self._extract_text_handler(file)
-        except Exception as e:
-            raise ValueError(f"Error extracting text from file: {e}")
-        finally:
-            await file.seek(0)
+        pass
