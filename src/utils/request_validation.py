@@ -1,4 +1,4 @@
-from fastapi import UploadFile
+from fastapi import UploadFile, HTTPException
 from ..config import ALLOWED_EXTENSIONS, MAX_FILE_SIZE_MB
 
 
@@ -13,3 +13,19 @@ async def file_size_check(file: UploadFile) -> bool:
     file_size = file.file.tell()  # Get current position (file size)
     file.file.seek(0)  # Reset position for classification
     return file_size <= MAX_FILE_SIZE_MB * 1024 * 1024
+
+
+async def validate_file(file: UploadFile) -> UploadFile:
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file or filename provided")
+    if not allowed_file(file.filename):
+        allowed = ", ".join(ALLOWED_EXTENSIONS)
+        raise HTTPException(
+            status_code=400, detail=f"File type not allowed. Allowed types: {allowed}"
+        )
+    if not await file_size_check(file):
+        raise HTTPException(
+            status_code=400,
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
+        )
+    return file

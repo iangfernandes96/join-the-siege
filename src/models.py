@@ -1,5 +1,4 @@
 from pydantic import BaseModel, Field
-from fastapi import UploadFile
 from typing import Optional
 
 
@@ -12,12 +11,6 @@ class ClassifierResult(BaseModel):
     classifier_name: str = Field(
         ..., description="Name of the classifier that made the decision"
     )
-
-
-class ClassificationRequest(BaseModel):
-    """Request model for file classification."""
-
-    file: UploadFile = Field(..., description="The file to classify")
 
 
 class ClassificationResponse(ClassifierResult):
