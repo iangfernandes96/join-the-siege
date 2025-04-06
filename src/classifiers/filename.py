@@ -30,15 +30,13 @@ class FilenameClassifier(BaseClassifier):
 
         # Check each document type's patterns
         for doc_type, patterns in self.patterns.items():
-            for pattern in patterns:
-                if pattern in filename:
-                    logger.info(
-                        f"Classified as '{doc_type}' using pattern " f"'{pattern}'"
-                    )
-                    return ClassifierResult(
-                        document_type=doc_type,
-                        classifier_name=self.__class__.__name__,
-                    )
-
+            if any(pattern in filename for pattern in patterns):
+                logger.info(
+                    f"Classified as '{doc_type}' using pattern " f"'{patterns}'"
+                )
+                return ClassifierResult(
+                    document_type=doc_type,
+                    classifier_name=self.__class__.__name__,
+                )
         logger.info("No matching patterns found, returning unknown")
         return ClassifierResult(classifier_name=self.__class__.__name__)
