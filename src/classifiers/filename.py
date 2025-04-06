@@ -32,7 +32,7 @@ class FilenameClassifier(BaseClassifier):
         for doc_type, patterns in self.patterns.items():
             if any(pattern in filename for pattern in patterns):
                 logger.info(
-                    f"Classified as '{doc_type}' using pattern " f"'{patterns}'"
+                    f"Classified as '{doc_type}'"
                 )
                 return ClassifierResult(
                     document_type=doc_type,
