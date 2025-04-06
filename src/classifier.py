@@ -35,11 +35,14 @@ async def classify_file(file: UploadFile) -> ClassificationResponse:
     try:
         result = await classifier.classify(file)
         return ClassificationResponse(
-            document_type=result.document_type, classifier_name=result.classifier_name
+            document_type=result.document_type,
+            classifier_name=result.classifier_name,
+            file_name=file.filename
         )
     except Exception as e:
         logger.error(f"Error in {classifier.__class__.__name__}: {str(e)}")
         logger.warning("All classifiers failed to classify the file")
         return ClassificationResponse(
-            document_type="unknown", classifier_name="SequentialClassifier"
+            document_type="unknown", classifier_name="SequentialClassifier",
+            file_name=file.filename
         )

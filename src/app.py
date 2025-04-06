@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from src.classifier import classify_file
 from src.models import (ClassificationError, ClassificationResponse)
 from src.utils.request_validation import validate_file
+from typing import List
 
 
 app = FastAPI(
@@ -29,6 +30,18 @@ async def classify_file_route(file: UploadFile = File(default=None)):
     except Exception as e:
         error = ClassificationError(error="Classification failed", details=str(e))
         raise HTTPException(status_code=500, detail=error.model_dump())
+
+
+@app.post("/classify_file_bulk", response_model=List[ClassificationResponse])
+async def classify_file_bulk_route(files: List[UploadFile] = File(default=None)):
+    """
+    Classify multiple files at once.
+    """
+    results = []
+    for file in files:
+        result = await classify_file_route(file)
+        results.append(result)
+    return results
 
 
 if __name__ == "__main__":

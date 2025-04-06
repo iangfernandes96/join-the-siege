@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-
+import uuid
 
 class ClassifierResult(BaseModel):
     """Result from a single classifier."""
@@ -15,8 +15,9 @@ class ClassifierResult(BaseModel):
 
 class ClassificationResponse(ClassifierResult):
     """Response model for file classification."""
-
-    pass
+    file_id: str = Field(default_factory=lambda: str(uuid.uuid4()),
+                         description="The ID of the file")
+    file_name: str = Field(..., description="The name of the file")
 
 
 class ClassificationError(BaseModel):

@@ -26,6 +26,6 @@ async def validate_file(file: UploadFile) -> UploadFile:
     if not await file_size_check(file):
         raise HTTPException(
             status_code=400,
-            detail=f"File too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
+            detail=f"File {file.filename} too large. Maximum size is {MAX_FILE_SIZE_MB}MB",
         )
     return file
