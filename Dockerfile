@@ -1,23 +1,44 @@
-FROM python:3.12-slim
+# Build stage
+FROM python:3.12-alpine as builder
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install build dependencies
+RUN apk add --no-cache \
+    build-base \
+    file-dev \
+    python3-dev \
+    libffi-dev
+
+# Create and activate virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Runtime stage
+FROM python:3.12-alpine
+
+# Install runtime dependencies
+RUN apk add --no-cache \
     tesseract-ocr \
-    libmagic1 \
-    libmagic-dev \
-    && rm -rf /var/lib/apt/lists/*
+    file \
+    libmagic
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+# Copy application code
+COPY src/ src/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application
-COPY . .
+# Create non-root user
+RUN adduser -D -u 1000 appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 # Expose the port the app runs on
 EXPOSE 8000
